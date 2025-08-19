@@ -1,0 +1,115 @@
+# Installing Packages 
+install.packages("readr")
+install.packages("tidyverse")
+install.packages("dplyr")
+install.packages("lubridate")
+install.packages("ggplot2")
+install.packages("datasauRus")
+install.packages("tidyr")
+
+# Loading Libraries 
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(datasauRus)
+library(tidyr)
+
+# Importing and lodaing data files 
+Q1_2019 <- read.csv("Divvy_Trips_2019_Q1.csv")
+Q1_2020 <- read.csv("Divvy_Trips_2020_Q1.csv")
+View(Q1_2019)
+View(Q1_2020)
+
+
+# Checking consistency of column names 
+colnames(Q1_2019)
+colnames(Q1_2020)
+
+# Checking the structures of columns to identify any congruency 
+str(Q1_2019)
+str(Q1_2020)
+
+# Changing data types to match across both tables and dropping unnecessary columns 
+Cleaned_Q1_2019 <- Q1_2019 %>%
+  mutate(ride_id = as.character(ride_id),
+         usertype = case_when(usertype == "Subscriber" ~ "member",
+                              usertype == "Customer" ~ "casual")
+         ) %>%
+  
+  select(
+    ride_id,
+    ride_length,
+    usertype,
+    weekday
+  )
+
+Cleaned_Q1_2020 <- Q1_2020 %>%
+
+select(
+  ride_id,
+  ride_length,
+  usertype,
+  weekday
+)
+
+
+
+
+# Merging both tables and changing the weekdays to words
+all_trips <- bind_rows (Cleaned_Q1_2019, Cleaned_Q1_2020)
+all_trips <- all_trips %>%
+  mutate(weekday = factor(weekday,
+                          levels = 1:7,
+                          labels = c("Monday", "Tuesday", "Wednesday", "Thursday",
+                                     "Friday", "Saturday", "Sunday")
+                          ))
+
+# Calculations to generate insights and create visuals 
+
+# Finding the mean ride length 
+mean_ride_length <- mean(all_trips$ride_length, na.rm = TRUE)
+cat ("Mean Ride length:", round(mean_ride_length,1), "seconds\n")
+
+# Finding the minimum ride length 
+min_ride_length <- min(all_trips$ride_length, na.rm = TRUE)
+cat ("Min Ride Length:", round(min_ride_length,1), "seconds\n")
+
+# Finding the maximum ride length 
+max_ride_length <- max(all_trips$ride_length, na.rm = TRUE)
+cat ("Max Ride Length:", round(max_ride_length,1), "seconds\n")
+
+
+# Finding the day with the highest number of rides in each usertype category 
+
+mode_of_the_weekday <- all_trips %>%
+  drop_na()%>%
+  group_by(weekday, usertype) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+# Sorting the average ride length by usertype 
+
+average_ride_length_by_usertype <- all_trips %>%
+  drop_na() %>%
+  group_by(usertype) %>%
+  summarise(average_ride_length_in_seconds = mean(ride_length, na.rm =TRUE),
+            average_ride_length_in_minutes = mean(ride_length, na.rm =TRUE)/60
+  ) %>% 
+  
+  arrange(usertype)
+  print(average_ride_length_by_usertype)            
+  
+  
+# Creating a barchart to compare the average ride length for usertypes 
+  ggplot(data = average_ride_length_by_usertype)+
+    geom_col(mapping = aes (x=average_ride_length_in_minutes, y=usertype))+
+    labs( title = "Average Ride Length by Usertype",
+          x = "Average Ride Length in Minutes ",
+          y = "Usertype")
+  
+# Exporting tables created for use in Powerpoint slides 
+  write.csv(mode_of_the_weekday, "Count_of_riders_per_day_across_usertypes.csv", 
+            row.names = FALSE, quote = FALSE, fileEncoding = "UTF 8")
+  
