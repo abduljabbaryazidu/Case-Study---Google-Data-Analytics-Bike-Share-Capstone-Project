@@ -17,4 +17,4 @@ I used the tools which I find easy and what was right in the situatuions. Mostly
 ## Disclaimer
 As I mentioned in one of the columns above, data description and data storage information is in the pdf file named Case-Study-1_Bike-share.pdf. While I was wriing my codes, I was asked to use latest 12 month data that I could find. At the time, March 2021 data had just came out. So I downloaded data zip files of last 13 months, from March 2021 to March 2020. So my reading and insights are from that period only. It will be different with the new comming data..
 
-## Link of the course. Google Data Analytics Professional Certificate: <//https://coursera.org/share/99665d02ad76f2e714efdcc56f262ab8//>
+## Link of the course. Google Data Analytics Professional Certificate: <//https://coursera.org/share/fb682a37a387630f939001abd0886f71/>
